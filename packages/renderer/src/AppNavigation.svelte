@@ -6,6 +6,7 @@ import { onMount } from 'svelte';
 import { CommandRegistry } from './lib/CommandRegistry';
 import { containersInfos } from './stores/containers';
 import { volumeListInfos } from './stores/volumes';
+import InlineSVG from 'svelte-inline-svg';
 
 let containersCountValue;
 
@@ -311,7 +312,14 @@ export let meta;
                     ? 'dark:text-white pf-m-current'
                     : 'dark:text-gray-400'} ">
                   <div class="ml-2">
-                    <a href="/contribs/{contribution.name}" class="pf-c-nav__link">{contribution.name}</a>
+                    <a href="/contribs/{contribution.name}" class="pf-c-nav__link">
+                      <div class="flex items-center w-full h-full">
+                        <div class="flex items-center">
+                          <InlineSVG src="{contribution.icon}" width="24" height="24" />
+                          <span class="ml-2">{contribution.name}</span>
+                        </div>
+                      </div>
+                    </a>
                   </div>
                 </li>
               {/each}

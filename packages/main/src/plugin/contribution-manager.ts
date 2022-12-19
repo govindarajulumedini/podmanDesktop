@@ -52,6 +52,8 @@ export class ContributionManager {
           return [];
         }
 
+        const icon = await this.loadBase64Icon(directory, metadata);
+
         // grab all UI keys
         const uiKeys = Object.keys(metadata.ui);
         return uiKeys.map(key => {
@@ -65,6 +67,7 @@ export class ContributionManager {
             name: uiMetadata.title,
             type: 'docker',
             uiUri,
+            icon,
             hostEnvPath: path.join(directory, 'host'),
             storagePath: directory,
           };
@@ -76,6 +79,26 @@ export class ContributionManager {
     // flatten
     this.contributions = allContribs.flat();
     this.apiSender.send('contribution-register', this.contributions);
+  }
+
+  async loadBase64Icon(rootDirectory: string, metadata: any): Promise<string> {
+    if (!metadata.icon) {
+      //return an empty svg icon <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>
+      return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiLz4=';
+    }
+    const iconPath = path.join(rootDirectory, metadata.icon);
+    if (!fs.existsSync(iconPath)) {
+      throw new Error('Invalid icon path : ' + iconPath);
+    }
+    return new Promise((resolve, reject) => {
+      fs.readFile(iconPath, 'utf-8', (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve('data:image/svg+xml;base64,' + new Buffer(data).toString('base64'));
+        }
+      });
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
