@@ -90,15 +90,9 @@ export class ContributionManager {
     if (!fs.existsSync(iconPath)) {
       throw new Error('Invalid icon path : ' + iconPath);
     }
-    return new Promise((resolve, reject) => {
-      fs.readFile(iconPath, 'utf-8', (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve('data:image/svg+xml;base64,' + new Buffer(data).toString('base64'));
-        }
-      });
-    });
+    return fs.promises
+      .readFile(iconPath, 'utf-8')
+      .then(data => 'data:image/svg+xml;base64,' + new Buffer(data).toString('base64'));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
